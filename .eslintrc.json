@@ -13,6 +13,11 @@
     "ecmaVersion": 2015
   },
   "rules": {
-    "class-methods-use-this": "off"
+    // Some functions are defined as class methods to keep them in scope of the class
+    // doesn't mean they require the use of the object
+    "class-methods-use-this": "off",
+    // Using continues inside of loops allows for 'early-returns' inside a loop
+    // prevents deep nesting of conditions
+    "no-continue": "off"
   }
 }
