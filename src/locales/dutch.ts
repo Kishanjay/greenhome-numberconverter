@@ -15,6 +15,11 @@ export default {
     12: 'twaalf',
     13: 'dertien',
     14: 'veertien',
+    15: 'vijftien',
+    16: 'zestien',
+    17: 'zeventien',
+    18: 'achttien',
+    19: 'negentien',
   },
   tens: {
     2: 'twintig',

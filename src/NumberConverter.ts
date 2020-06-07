@@ -1,7 +1,7 @@
 interface NumberConverterOptions {
   lang: {
     zero: string,
-    units: { // all numbers that have only a single translation
+    units: { // all numbers < 20 that have only a single translation
       1: string;
       2: string;
       3: string;
@@ -127,10 +127,10 @@ class NumberConverter {
       numberRemainder = Math.floor(numberRemainder / 1000);
       numberGroupIndex += 1;
 
-      groups.push(num + groupName);
+      groups.push(groupName && numberGroup === 1 ? groupName : num + groupName);
     }
 
-    return groups.reverse().join(' ');
+    return groups.reverse().join(' ').trim();
   }
 
   textToNumber(text: string): number {
