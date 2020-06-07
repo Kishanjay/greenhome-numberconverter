@@ -1,6 +1,6 @@
 export default {
+  zero: 'nul',
   units: {
-    0: 'nul',
     1: 'een',
     2: 'twee',
     3: 'drie',
@@ -15,12 +15,23 @@ export default {
     12: 'twaalf',
     13: 'dertien',
     14: 'veertien',
-    20: 'twintig',
-    30: 'dertig',
-    40: 'veertig',
-    100: 'honderd',
   },
-  numberGroups: {
+  tens: {
+    2: 'twintig',
+    3: 'dertig',
+    4: 'veertig',
+    5: 'vijftig',
+    6: 'zestig',
+    7: 'zeventig',
+    8: 'tachtig',
+    9: 'negentig',
+    order: 'inverse',
+    link: 'en',
+  },
+  hundreds: {
+    1: 'honderd',
+  },
+  numberGroups: { // key => x with 10^(x*3)
     1: 'duizend',
   },
 };

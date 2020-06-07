@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node ./build/index.js",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "author": "Kishan Nirghin",
   "license": "ISC",
