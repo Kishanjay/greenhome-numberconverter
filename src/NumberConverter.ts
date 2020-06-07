@@ -28,10 +28,14 @@ interface NumberConverterOptions {
     hundreds: {
       1: string;
       [key: number]: string;
+      omitOne?: boolean;
+      link?: string;
     },
     numberGroups: {
       1: string;
       [key: number]: string; // in increasing order the number groups
+      omitOne?: boolean,
+      link?: string,
     }
   }
 }
@@ -54,12 +58,39 @@ class NumberConverter {
     }
   }
 
+  // Converts any [0 < number < 100] to its string representation
+  private tensToText(number: number) {
+    let numberRemainder = number;
+    const numberOfTens = Math.floor(numberRemainder / 10);
+    numberRemainder -= numberOfTens * 10;
 
-  // convert any number from 0 to 1000 to a string
-  // use general rules unless exceptions are specified
+    let tensValue = numberOfTens > 1
+      ? this.options.lang.units[numberOfTens] + this.options.lang.units[10]
+      : this.options.lang.units[10];
+
+    if (numberOfTens in this.options.lang.tens) {
+      tensValue = this.options.lang.tens[numberOfTens];
+    }
+
+    if (numberRemainder === 0) {
+      return tensValue;
+    }
+
+    const unitValue = this.options.lang.units[numberRemainder];
+    let link = this.options.lang.tens.link || '';
+    if (this.options.lang.tens.order === 'inverse') {
+      if (unitValue.slice(-1) === 'e' && link.charAt(0) === 'e') {
+        link = `ë${link.slice(1)}`;
+      }
+      return unitValue + link + tensValue;
+    }
+    return tensValue + link + unitValue;
+  }
+
+  // Convert any [0 < number < 1000] to its string representation
   private numberGroupToText(number: number) {
     if (number >= 1000) {
-      throw Error(`invalid hunderds: ${number}`);
+      throw Error(`invalid numbergroup: ${number}`);
     }
 
     let result = '';
@@ -71,35 +102,30 @@ class NumberConverter {
 
     if (numberRemainder >= 100) {
       const numberOfHundreds = Math.floor(numberRemainder / 100);
-      result += this.options.lang.hundreds[numberOfHundreds]
-        || this.options.lang.units[numberOfHundreds] + this.options.lang.hundreds[1];
       numberRemainder -= numberOfHundreds * 100;
+
+      const link = this.options.lang.hundreds.link || '';
+
+      if (numberOfHundreds in this.options.lang.hundreds) {
+        if (!this.options.lang.hundreds.omitOne) {
+          result += this.options.lang.units[numberOfHundreds] + link;
+        }
+        result += this.options.lang.hundreds[numberOfHundreds];
+      } else {
+        result += this.options.lang.units[numberOfHundreds] + link + this.options.lang.hundreds[1];
+      }
+
+      if (numberRemainder > 0) {
+        result += link;
+      }
     }
 
     if (numberRemainder in this.options.lang.units) {
       return result + this.options.lang.units[numberRemainder];
     }
+
     if (numberRemainder > 10) {
-      const numberOfTens = Math.floor(numberRemainder / 10);
-      numberRemainder -= numberOfTens * 10;
-
-      let tensValue = numberOfTens > 1
-        ? this.options.lang.units[numberOfTens] + this.options.lang.units[10]
-        : this.options.lang.units[10];
-
-      if (numberOfTens in this.options.lang.tens) {
-        tensValue = this.options.lang.tens[numberOfTens];
-      }
-
-      const unitValue = this.options.lang.units[numberRemainder];
-      const link = this.options.lang.tens.link || '';
-      if (this.options.lang.tens.order === 'inverse') {
-        result += unitValue ? unitValue + link + tensValue : tensValue;
-      } else {
-        result += unitValue ? tensValue + link + unitValue : tensValue;
-      }
-
-      return result;
+      return result + this.tensToText(numberRemainder);
     }
 
     if (numberRemainder > 0) {
@@ -121,13 +147,24 @@ class NumberConverter {
 
     while (numberRemainder >= 1) {
       const numberGroup = numberRemainder % 1000;
-      const num = this.numberGroupToText(numberGroup);
-      const groupName = this.numberGroupIndexName(numberGroupIndex);
+      const currentGroupIndex = numberGroupIndex;
 
       numberRemainder = Math.floor(numberRemainder / 1000);
       numberGroupIndex += 1;
 
-      groups.push(groupName && numberGroup === 1 ? groupName : num + groupName);
+      if (numberGroup === 0) {
+        continue;
+      }
+
+      const groupName = this.numberGroupIndexName(currentGroupIndex);
+      if (numberGroup === 1 && this.options.lang.numberGroups.omitOne && groupName) {
+        groups.push(groupName);
+        continue;
+      }
+
+      const num = this.numberGroupToText(numberGroup);
+      const link = this.options.lang.numberGroups.link || '';
+      groups.push(num + link + groupName);
     }
 
     return groups.reverse().join(' ').trim();

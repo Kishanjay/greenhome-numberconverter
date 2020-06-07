@@ -35,8 +35,12 @@ export default {
   },
   hundreds: {
     1: 'honderd',
+    omitOne: true,
   },
   numberGroups: { // key => x with 10^(x*3)
     1: 'duizend',
+    2: 'miljoen',
+    3: 'miljard',
+    omitOne: true,
   },
 };
