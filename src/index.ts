@@ -1,11 +1,15 @@
 import NumberConverter from './NumberConverter';
 
+import DUTCH_LANG from './locales/dutch';
 
 function sample1() {
-  const dutchNumberConverter = new NumberConverter({});
+  const dutchNumberConverter = new NumberConverter({ lang: DUTCH_LANG });
 
-  dutchNumberConverter.numberToText(1394458);
-  dutchNumberConverter.textToNumber('honderdduizend');
+  const r = dutchNumberConverter.numberToText(30);
+  console.log({ r });
+
+  const x = dutchNumberConverter.textToNumber('honderdduizend');
+  console.log({ x });
 }
 
 

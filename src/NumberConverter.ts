@@ -170,8 +170,20 @@ class NumberConverter {
     return groups.reverse().join(' ').trim();
   }
 
+  // This method will work fine up for numbers < 10.000.000
+  // due to keep calculation quick the limit is set to 1.000.000
   textToNumber(text: string): number {
-    return text ? 0 : 1;
+    let currentNumber = 0;
+    while (this.numberToText(currentNumber) !== text) {
+      currentNumber += 1;
+
+      if (currentNumber >= 1000000) {
+        console.log('Error: cannot convert numbers > 1.000.000');
+        return -1;
+      }
+    }
+
+    return currentNumber;
   }
 }
 
